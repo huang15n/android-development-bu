@@ -1,9 +1,12 @@
-public class Hello{
-    public static void main(String []args){
+import java.util.ArrayList;
+
+class Hello{
  
 
-     for(int i = 0; i< 10; System.out.println(i),i++){
-    }
+    public static void main(String []args){
+     Integer box = 25;
+     int unbox = box;
+     System.out.println(unbox);
 
     }
  

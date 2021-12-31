@@ -655,3 +655,92 @@ Constructor.
 Instance itialization blocks are useful if you want to have some code run regardless of which constructor is used or if you want to do some instance initialization for anonymous classes.
 
 
+## final keyword 
+
+final data_type variable = value; this means the value cannot be changed 
+
+final keyword implies constant ~ primitive - value is constant. reference ariable , reference is constant , not object content 
+
+
+final keyword is used with instance, local or static variables 
+
+the final instance variables is constant for lfie of the object, must be initialized in declaration/ constructor or instance initializer 
+
+
+```java
+
+public class Hello{
+
+    private final int variable = 1;
+
+    public Hello(int variable){
+        this.variable = 10;
+    }
+
+
+    public static void main(String []args){
+ 
+ 
+
+    }
+ 
+}
+// The final field Hello.variable cannot be assigned
+```
+
+
+### final static 
+
+final local variable is the constant for the life of the block 
+
+it is constant irrespective of number of instances : public static int CONSTANT_VARIABLE = value;
+
+the name must be initialized in declaration or static initializer 
+naming convention is all caps with underscore separating words 
+
+
+
+constant variables with final keywords are compile time contant which performs compiler optimization. the constructor is only run at runtime when an object is created. 
+
+
+```java
+//invalid 
+
+    private final static int variable;
+    static {
+        variable = 20;
+
+    }
+
+public class ClassName{
+    final int x;
+    public ClassName(){
+        x = 10;
+    }
+}
+  class Hello{
+
+    private final int variable;
+    public Hello(){
+        this.variable = 10;
+        System.out.println(this.variable);
+    }
+    public Hello(int variable){
+        this.variable = variable;
+
+    }
+
+
+    
+
+    public static void main(String []args){
+     Hello className = new Hello();
+
+ 
+
+    }
+ 
+}
+
+ 
+```

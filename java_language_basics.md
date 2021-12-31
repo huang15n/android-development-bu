@@ -1025,6 +1025,294 @@ Math.log(float_number);
 ```
 
 
+## Boxed Primitive 
+int ~ integer 
+long ~ Long 
+byte ~ Byte 
+short ~ Short 
+float ~ Float 
+double ~ Double 
+boolean ~ Boolean 
+
+```java
+ class Hello{
+ 
+
+    public static void main(String []args){
+     Integer intValue = Integer.valueOf(10);
+    // It is rarely appropriate to use this constructor. Use parseInt(String) to convert a string to a int primitive, or use valueOf(String) to convert a string to an Integer object. Integer intValue2 = new Integer("2");
+    int intPrimitive = intValue.intValue();
+
+    Float floatValue = Float.valueOf(1.2f);
+    float floatPrimitive = floatValue.floatValue();
+    Double doubleValue = Double.valueOf(20.0);
+    double doublePrimitive = doubleValue.doubleValue();
+     Boolean boolValue = Boolean.valueOf(true);
+   // The method valueOf(String) in the type Short is not applicable for the arguments (int) Byte byteValue = Byte.valueOf(10);
+    // The method valueOf(String) in the type Short is not applicable for the arguments (int) Short shortValue = Short.valueOf(1);
+ Character charValue = Character.valueOf('c');
+
+
+ 
+
+    }
+ 
+}
+
+```
+
+
+### pratical use of boxing and unboxing 
+
+
+```java
+import java.util.ArrayList;
+
+class Hello{
+ 
+
+    public static void main(String []args){
+    
+   String data = "404 this is not a valid number 100000";
+
+   String [] items = data.split(" ");
+ 
+   Long item = Long.parseLong(items[0]);
+
+
+    }
+ 
+}
+
+```
+
+
+```java
+import java.util.ArrayList;
+
+class Hello{
+ 
+
+    public static void main(String []args){
+    
+   String data = "404 this is not a valid number 100000";
+     
+   boolean letter = Character.isLetter('a');
+   boolean digit = Character.isDigit('1');
+   boolean letterOrDigit = Character.isLetterOrDigit('a');
+   boolean isUpper = Character.isUpperCase('A');
+
+
+    }
+ 
+}
+
+```
+
+
+```java
+
+import java.util.ArrayList;
+
+class Hello{
+ 
+
+    public static void main(String []args){
+         String str = Integer.toString(1000);
+
+       boolean isNaN = Double.isNaN(1.2);
+       String binary = Integer.toBinaryString(12);
+       System.out.println(binary);
+
+    }
+ 
+}
+```
+
+
+### Autoboxing 
+introduced in java 5 and automatically boxes a primitive 
+
+```java
+import java.util.ArrayList;
+
+class Hello{
+ 
+
+    public static void main(String []args){
+     Integer box = 25;
+     int unbox = box;
+          int unboxIntValue = box.intValue();
+
+     System.out.println(unbox);
+
+    }
+ 
+}
+
+```
+
+
+the method invokation such as ArrayList add method autoboxes the elements to new Integer(value); which reduces verbosity 
+
+
+regular methods such as 
+```java
+// autoboxing 
+
+void foo(Integer arg){};
+
+foo(100);
+// autounboxing 
+void foo(int value){};
+foo(new Integer(100));
+```
+
+for time & space efficiency , we prefer primtiive over boxing because boxing rules the unmixed operatives that were promoted from one type to another 
+
+boxed primitives are classes as opposed to primitives have only values, boxed primtives have identities too == &  != are identity comparison. finally mixed type computation lead to confusing results . hence we always prefer primitives 
+
+
+
+
+
+
+
+
+### Naming Conventions 
+
+this adheres to generally accepted naming convetions 
+
+typographical appearance 
+
+packages : lowercase alphabetic characters, rarely any dgits, generally short < 8 characters and single word. meaningful abbreviations, acryomns never start with java., use org's reverse internet domain names 
+
+
+class: Capitalize first letter of each word
+
+class, methods, and fields: avoid abbreviations except commonly used like min and max
+
+methods & variables: camelCase, static final variables all CAP with underscires separating words 
+
+
+
+grammatical part of spech 
+singular noun or noun phrases 
+
+methods perform actions use descriptive names, do not hesitate to use longer names 
+
+
+boolean return type is followed by noun or noun phrase or adjective : isActive(), isDigit(), isEmpty() 
+
+
+
+non boolean attribute of objects: get or set if setAttribute or getAttribute() 
+
+fields: boolean usually adjective active 
+nonboolean : nous or noun phrase 
+singular and plural nouns: items/lists 
+
+naming objects of same class by purpose 
+
+
+
+
+### Class Organization 
+
+orders: 
+1. variable ~ static followed by instance 
+2. static initializer 
+3. static nested class 
+4. static method 
+5. instance initializer 
+6. constructor 
+7. instance nested classes 
+8. methods 
+
+
+class size: the single responsibility principles 
+it helps to create better abstraction and having fewer lines of code 
+generally a class should have less than 200 lines 
+
+methods: small and focused, should do only one thing at a time. refactor long method with  software reuse, clean and reusable 
+
+
+
+local variables: minimize the scope of local variables 
+prefer for to while loops 
+
+
+
+### braces 
+begining brace ~ end of line 
+ending braces ~ start of the statement 
+indenting blocks by 4 spaces or 1 tab 
+
+line length 80 characters 
+break after command e.g. method calls & declarations 
+break before operators, blocks, arithmetic ops 
+use 8 space rule or 2 tabs 
+
+
+
+### comments 
+
+
+nonobvious design decisions 
+frequent comments results in poor codequaility 
+use descriptive methods and variables names 
+
+implementation comments 
+// single line 
+/* */ multilines 
+code documentations 
+diable code 
+
+
+documentation comments 
+/**
+
+*.
+API implementaiton free 
+javadoc ~ to extract to HTML files 
+
+
+use inside methods or with private fields 
+
+used inside methods or with private fields. 
+1. block comments 
+2. single line comments 
+3. trailing comments 
+
+
+### blocking comments 
+describes a block of code 
+1 or more lines in /**/
+preceded by blank lines 
+```java
+/*
+
+*/
+
+```
+
+
+### trailing commment 
+very short comments appear on same line as code 
+// or /**/
+
+```java
+/*     */
+//
+```
+
+
+
+
+
+
+
+
 
 
 
