@@ -23,7 +23,7 @@ There are two apps we will create. A quiz app tests the user's knowledge of geog
 you write subclasses of Activity to impelment the functionality that you app requires. A simple application may need only one subclass; a complex app can have many. In our case, activity_main.xml is linekd to MainActivity.java
 
 
-- a layout defines a set of UI objects and the object's positions on the screen. a layout is made up of defintions written in XML. each defintion is used to create an obejct that appears onscreen, like a button or some text 
+- a **layout** defines a set of UI objects and the object's positions on the screen. a layout is made up of defintions written in XML. each defintion is used to create an obejct that appears onscreen, like a button or some text 
 
 
 in the project tool window, click the discoure arrow next to app, Android studio automatically opens the file activity_main.xml and MainActivity.kt/MainActivity.java in the main view. called the editor tool window or just the edtior 
@@ -482,3 +482,447 @@ I cannot encourage you enough to take on these challenges, tackling them cements
 
 
 ## Android and Model View Controller 
+
+
+### Concept of Model View Controller and android 
+the Android APIs were originally designed around an architecture called Model View Controller or MVC. in MVC, your app must be a model object, a view object, and a controller obejct 
+
+
+
+
+- Model obejcts hold the apps' data and **business logic**. Model classes aer typically designed to model the things you app is concerned with, such as a user, a product, a photo on a server, a tv show -- or a true/false question. model objects have no knowledge of the UIl their sole purpose is holding and managing data 
+in android apps, model classes are geenrally custom classes you create. all of the model obejcts in your app compose its model layer 
+
+
+- View objects know how to draw themselves on the screen and how to respond to user input, like touches: a simple rule of thumb is that if you can see it onscreen, then it is a view 
+android provides a wealth of configurable view classes, you can create custom view classes. an app's view objects makes up its view layers --- view layer consists of the widgets that are inflated from /res/layout/activity_main.xml 
+
+- Controller obejcts tie the view and model objects together. they contain **application logic**. controllers are designed to respond to various events triggered by view objects and to manage the flow of data and from model obejcts and the view layers 
+in andorid, a controller is typically a subclass of Activity, Fragment, or Service 
+
+
+notice model and view objects do not talk to each other directly; controllers sit squarely in the middle of everything receiving messages from some objects and dispatching instructions to others 
+
+
+user input - user interacts with view objects -> views - view seds mmesages to controller -> controller -> controller lupdates model objects -> model 
+
+model - controller take data from model objects that its veiws are intereseted in -> controller -- controller updates view with changes in model objects -> view 
+
+
+### benfits of MVC 
+an app can accumulate features until it is too complicated to understand. seprating code into classes helps you design and understand the app as a whole; you can think in terms of classes instead of individual variables and functiosn 
+
+similarly, separating classes into model, view, and controller layers helps you design and understand an app; you can think in terms of layers isntead of individual classes. you can see the benefits of keeping layers separte. 
+
+MVC also makes classes easier to reuse. a class with restricted responsibilities is more reusable than one with its fingers in every pie 
+
+MVC works great for small, simple apps. in larger, more complciated apps, the controller layer can get very large and complex. In gneral, you want to keep your activity and other controllers thin. think activties contain as little business and setup logic as possible. *** once MVC no longer lends itself to thin controllers in your app, you should cosnider alternative patterns, such as model-view-view-model*** 
+
+
+
+
+### Model layer and example 
+
+create a new class under the package and select New-> Kotlin FileClass or Java Class, name it as class Question and click ok. the Question class holds two pieces of data, the question text and question answer. add two member variables and a constructor 
+ 
+
+In Kotlin: the @StringRes annotation is not required, but we recomend you include it for two reasons. first the annoation helps the code inspect built into Android Studio named Lint verify at compile time that usage of constructor provide a valid string resource ID. this prevents runtime crashes where the constructor is used with an invalid resource ID such as an ID that points to some resource other than a string. Second, the annoatio makes your code more redable for other devs 
+
+why is textResId and Int and not a String? the textResId variable will gold the resource ID always an Int of the string resources 
+we use the `data` keyword for all model class. doing so clearly indicates that the class is meant to hold data. Also, the compiler does extra work for data classes that makes your life easier, such as automatically defining useful functions like equals(), hashCode(), and a nicely formatted toString() 
+you are going to have MainActivity create a lsit of Question obejcts. it will then interact with the TextView and three buttons to display questiosn and provide feedbacks 
+
+
+
+```kotlin
+
+package com.windsor.hellokt.models
+
+import androidx.annotation.StringRes
+
+data class Question(@StringRes val textResId : Int, val answer: Boolean)
+```
+
+
+
+
+
+
+
+
+in java, why is mTextResId an int and not a String? The mTextResId variable will hold the resource ID
+(always an int) of a string resource for the question. 
+
+File → Settings
+on Windows). Expand Editor and then expand Code Style. Select Java, then choose the Code
+Generation tab
+
+
+These variables need getter and setter methods. Rather than typing them in yourself, you can have Android Studio generate the implementations for you. In the Naming table, select the Field row  and add m as the Name prefix for fields. Then add m for instance field, s for static field. What is the point of setting these prefixes? Now, when you ask Android Studio to generate a getter for mTextResId, it will create getTextResId() rather than getMTextResId() and isAnswerTrue() rather
+than isMAnswerTrue().  
+by doing so, you are letting Android Studio to provide more descriptive and meaningful method names 
+
+alternatively, you can just do, but it is not as intuitive as the method shown above 
+right click -> Generateor use alt + insert.
+
+
+
+```java
+package com.windsor.hello.Models;
+
+public class Question {
+
+    private int mTextResId;
+    private boolean mAnswerTrue;
+
+    public Question(int textResId, boolean answerTrue) {
+        mTextResId = textResId;
+        mAnswerTrue = answerTrue;
+    }
+
+    public int getTextResId() {
+        return mTextResId;
+    }
+
+    public void setTextResId(int textResId) {
+        mTextResId = textResId;
+    }
+
+    public boolean isAnswerTrue() {
+        return mAnswerTrue;
+    }
+
+    public void setAnswerTrue(boolean answerTrue) {
+        mAnswerTrue = answerTrue;
+    }
+}
+
+
+```
+
+
+in a moment, you will modify Controller to work with Model, let's take a look at how pieces will work together 
+
+
+## View Layer and example 
+
+1. give TextViews an android:id attribute this will need a resource ID so that you can set its text in MainActivity's code 
+2. remove the android:text attribute from TextView. you no longer need a hard coded question to be part of its defintion 
+3. specify a default string for design tab to display in TextView when rendering a preview of your layout -> tools:text attribute (ALT+ENTER to import) to the TextView and point it to a string resource. ***you could use android:text and just overwrite the value at runtime, but using tools:text instead makes it clear that the value you prvoide is for preview purposes only***
+4. add the new button widgtet as a child of the root element 
+```xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center"
+
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="24sp"
+        tools:text = "this is the demo question"
+        android:id="@+id/question"/>
+
+
+    <LinearLayout android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/true_button"
+            android:text="@string/true_button" 
+            android:layout_margin="20dp"/>
+
+
+        <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/false_button"
+            android:text="@string/false_button"
+            android:layout_margin="20dp"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical">
+
+        <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/next_button"
+            android:text="@string/next_button"
+            android:layout_margin="20dp"/>
+        
+    </LinearLayout>
+
+
+</LinearLayout>
+```
+5. update string.xml (res/values/strings.xml
+
+```xml
+
+<resources>
+    <string name="app_name">Hello</string>
+    <string name="question_one">am I handsome?</string>
+    <string name="question_two">are you marvelous?</string>
+    <string name="question_three">am I stupid?</string>
+    <string name="question_four">are you silly?</string>
+    <string name="question_five">Am I the lord ?</string>
+    <string name = "true_button">True</string>
+    <string name = "false_button">False</string>
+    <string name = "correct_toast"> Correct! you rock! </string>
+    <string name = "wrong_toast"> Wrong! you suck </string>
+    <string name="next_button">Next</string>
+</resources>
+```
+
+notice that you can use the escape sequence \' in the last value to get an apostrphe in your string, you can use all the sual escape sequence in your string resources 
+
+
+
+
+### Controller Layer and example 
+
+
+```kotlin
+package com.windsor.hellokt
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import com.windsor.hellokt.models.Question
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var trueButton: Button
+    private lateinit var falseButton: Button
+    private lateinit var mNextButton: Button
+    private lateinit var mQuestionText : TextView
+    private lateinit var point : TextView
+    private val mQuestionBank  = listOf(
+        Question(R.string.question_one, true),
+        Question(R.string.question_two, false),
+        Question(R.string.question_three, false),
+        Question(R.string.question_four, true),
+        Question(R.string.question_five, false),
+    )
+    private var mCurrentIndex = 0
+ 
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var question  = mQuestionBank[mCurrentIndex].textResId
+        mQuestionText.setText(question)
+        point.setText("points:0")
+
+
+        trueButton.setOnClickListener(View.OnClickListener {
+                checkAnswer(true)
+        })
+        falseButton.setOnClickListener(View.OnClickListener {
+               checkAnswer(false)
+
+        })
+
+        mNextButton.setOnClickListener(View.OnClickListener {
+
+        updateQuestion()
+
+        })
+    }
+
+    fun updateQuestion(){
+        mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.size
+        var question = mQuestionBank[mCurrentIndex].textResId
+        mQuestionText.setText(question)
+
+
+    }
+
+    fun checkAnswer(answer : Boolean){
+        val correctAnswer = mQuestionBank[mCurrentIndex].answer
+        val messageResId = if(answer == correctAnswer){
+            R.string.correct_toast
+        }else{
+            R.string.wrong_toast
+        }
+        
+        Toast.makeText(this,messageResId,Toast.LENGTH_LONG).show()
+    }
+
+}
+
+```
+
+
+```java
+
+package com.windsor.hello;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.windsor.hello.Models.Question;
+
+public class MainActivity extends AppCompatActivity {
+    private Button mTrueButton;
+    private Button mFalseButton;
+    private Button mNextButton;
+    private TextView mQuestionText;
+    private Question [] mQuestionBank = new Question[]{
+            new Question(R.string.question_one, true),
+            new Question(R.string.question_two, false),
+                new Question(R.string.question_three, false),
+                new Question(R.string.question_four,true),
+                new Question(R.string.question_five,false), };
+    private int mCurrentIndex = 0;
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mTrueButton = findViewById(R.id.true_button);
+        mFalseButton = findViewById(R.id.false_button);
+        mNextButton = findViewById(R.id.next_button);
+        mQuestionText = findViewById(R.id.question);
+        int question = mQuestionBank[mCurrentIndex].getTextResId();
+        mQuestionText.setText(question);
+
+
+        mTrueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                checkAnswer(mQuestionBank[mCurrentIndex].isAnswerTrue(), true);
+
+            }
+        });
+
+
+        mFalseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkAnswer(mQuestionBank[mCurrentIndex].isAnswerTrue(), false);
+
+
+            }
+        });
+
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                updateQuestion();
+
+            }
+        });
+    }
+
+    private void updateQuestion(){
+        int question = mQuestionBank[mCurrentIndex].getTextResId();
+        mQuestionText.setText(question);
+
+    }
+
+    private void checkAnswer(boolean answer, boolean response){
+        if(answer == response){
+            Toast.makeText(MainActivity.this, R.string.correct_toast, Toast.LENGTH_LONG).show();
+
+
+        }else{
+            Toast.makeText(MainActivity.this, R.string.wrong_toast, Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
+}
+```
+
+
+#### adding an icon
+
+The suffixes on these directory names refer to the screen pixel density of a device:
+mdpi medium-density screens (~160dpi)
+hdpi high-density screens (~240dpi)
+xhdpi extra-high-density screens (~320dpi)
+xxhdpi extra-extra-high-density screens (~480dpi)
+xxxhdpi extra-extra-extra-high-density screens (~640dpi)
+
+
+If an app runs on a device that has a screen density not included in any of the application’s screen
+density qualifiers, Android will automatically scale the available image to the appropriate size for the
+device. Thanks to this feature, it is not necessary to provide images for all of the pixel density buckets.
+To reduce the size of your application, you can focus on one or a few of the higher-resolution buckets
+and selectively optimize for lower resolutions when Android’s automatic scaling provides an image
+with artifacts on those lower-resolution devices. These resource IDs are not qualified by screen density, so you do not need to determine the device’s
+screen density at runtime. All you have to do is use this resource ID in your code. When the app runs,
+the OS will determine the appropriate image to display on that particular device.
+
+
+Make sure the project tool window is displaying the Project view. Expand the contents of GeoQuiz/
+app/src/main/res
+
+
+#### referencing resources in XML 
+you use resource ID to reference resources in code, with a slightly different syntax, open activity_main.xml and add attributes to the widget definitoin 
+
+```xml
+
+android:drawableEnd="@drawable/arrow_right"
+ android:drawablePadding="4dp" 
+```
+
+in an XML resource, you refer to another resource by its resource type and name. a reference to a string resource begins with @string/. a reference to a drawable resource begins with @drawable. 
+
+#### screen pixel densities 
+in activity_main.xml, you specified attribute values in terms of dp units. now it is time to learn what they are 
+
+somtimes you need to specify values for view attribtue in terms of specific size usually in pixel, but sometimes points, millimeters or inches. you see this most commonly with attributes for text size, margins, and paddings 
+
+text size is the pixel height of the text on the device screen 
+
+***margins*** specify the distance between views
+
+***padding*** specifies the distance between a view's outside edges and its content 
+
+android automatically scales images to different screen pixel densities using desntiy-qualifiers 
+to sole these problems, android provides desntiy-independent dimension units that you can use to get the same size on different screen densities. 
+
+
+px: shorts for pixel. one pixel corresponds to one onscreen pixel, no matter what the display desnity is. because pixels do not scale appropriately with device display desnity, their use is not recommended 
+
+dp: short for desntiy independent pixel and usually pronounced dip. you tyically use this for margins, paddings or anything else for which you would otherwise specify size with a pixel value. ne dip is always 1/160 of an inch on a device's screen. you get the same size regardless of screen desnity: when your display is a higher desnity, density-independent pixels will expand to fill a lrager number of screen pixels 
+
+
+sp: short for scale independent pixel. scale-independent pixels aer desnity-independent pixels that also take into account the user's font size preference. you will almost always use sp to set display text size 
+
+pt, mn,in these are saled units, like dp, that llow you to specify interface sizes in points , millimeters, or inches. however, we do not recommend using them: not all devices are correctly configrued for these units to scale correctly 
+
+in pratice, you will use dp and sp almost exclusively. android will translate these values into pixels at runtime 
+
+
+### takeaway in programming 
+
+1. Kotlin does not need setter and getter methods 
+2. use var variable = if() {value} else {value}
+3. data class ModelName(@StringResId variable: Int, variable: Type)
